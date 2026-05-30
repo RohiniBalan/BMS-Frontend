@@ -57,9 +57,9 @@ export const login = async (email: string, password: string) =>{
     }
 
     // SAVE TOKEN
-    if(data.data?.token){
-        localStorage.setItem("accessToken", data.data.token);
-    }
+if (data.data?.accessToken) {
+    localStorage.setItem("accessToken", data.data.accessToken);
+}
     return data;
 }
 

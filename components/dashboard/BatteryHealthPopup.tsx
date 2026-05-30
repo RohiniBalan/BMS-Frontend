@@ -1,6 +1,8 @@
 "use client";
 
 import { Activity, BatteryCharging, ShieldCheck, Thermometer } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getHealthPopupData } from "@/services/analyticsService"; 
 
 export default function BatteryHealthPopup({
   onOk,
@@ -9,40 +11,64 @@ export default function BatteryHealthPopup({
   onOk: () => void;
   okHref: string;
 }) {
-  const healthMetrics = [
-    {
-      label: "SOC",
-      value: "76%",
-      helper: "Average charge",
-      icon: <BatteryCharging size={16} style={{ color: "#00E676" }} />,
-      bg: "rgba(0,230,118,0.12)",
-      color: "#00E676",
-    },
-    {
-      label: "SOH",
-      value: "94%",
-      helper: "Pack health",
-      icon: <ShieldCheck size={16} style={{ color: "#448AFF" }} />,
-      bg: "rgba(68,138,255,0.12)",
-      color: "#448AFF",
-    },
-    {
-      label: "Temperature",
-      value: "31 C",
-      helper: "Normal range",
-      icon: <Thermometer size={16} style={{ color: "#FFB300" }} />,
-      bg: "rgba(255,179,0,0.12)",
-      color: "#FFB300",
-    },
-    {
-      label: "Anomaly Score",
-      value: "0.08",
-      helper: "Low risk",
-      icon: <Activity size={16} style={{ color: "#00BFA5" }} />,
-      bg: "rgba(0,191,165,0.12)",
-      color: "#00BFA5",
-    },
-  ];
+
+  const [healthData, setHealthData] = useState({
+  soc: 0,
+  soh: 0,
+  temperature: 0,
+  anomalyScore: 0,
+});
+
+useEffect(() => {
+  const loadData = async () => {
+    try {
+      const res = await getHealthPopupData();
+
+      console.log("Health Popup Response:", res);
+
+      setHealthData(res.data);
+    } catch (err) {
+      console.error("Health popup error:", err);
+    }
+  };
+
+  loadData();
+}, []);
+
+const healthMetrics = [
+  {
+    label: "SOC",
+    value: `${healthData.soc}%`,
+    helper: "Average charge",
+    icon: <BatteryCharging size={16} style={{ color: "#00E676" }} />,
+    bg: "rgba(0,230,118,0.12)",
+    color: "#00E676",
+  },
+  {
+    label: "SOH",
+    value: `${healthData.soh}%`,
+    helper: "Pack health",
+    icon: <ShieldCheck size={16} style={{ color: "#448AFF" }} />,
+    bg: "rgba(68,138,255,0.12)",
+    color: "#448AFF",
+  },
+  {
+    label: "Temperature",
+    value: `${healthData.temperature} °C`,
+    helper: "Normal range",
+    icon: <Thermometer size={16} style={{ color: "#FFB300" }} />,
+    bg: "rgba(255,179,0,0.12)",
+    color: "#FFB300",
+  },
+  {
+    label: "Anomaly Score",
+    value: healthData.anomalyScore.toString(),
+    helper: "Low risk",
+    icon: <Activity size={16} style={{ color: "#00BFA5" }} />,
+    bg: "rgba(0,191,165,0.12)",
+    color: "#00BFA5",
+  },
+];
 
   return (
     <div className="min-h-screen w-full bg-[#050B18] relative overflow-hidden flex items-center justify-center p-4">

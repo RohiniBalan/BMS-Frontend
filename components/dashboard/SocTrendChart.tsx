@@ -9,17 +9,11 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const data = [
-  { time: "00:0", soc: 72 },
-  { time: "04:0", soc: 68 },
-  { time: "08:0", soc: 74 },
-  { time: "12:0", soc: 76 },
-  { time: "16:0", soc: 70 },
-  { time: "20:0", soc: 78 },
-  { time: "24:0", soc: 76 },
-];
+interface Props {
+  data: any[];
+}
 
-export default function SocTrendChart() {
+export default function SocTrendChart({ data }: Props) {
   return (
     <ResponsiveContainer width="100%" height={110}>
       <AreaChart data={data} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>

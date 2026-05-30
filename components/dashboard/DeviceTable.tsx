@@ -1,4 +1,4 @@
-import { allDevices, DashboardDevice } from "@/components/dashboard/userDeviceData";
+import { DashboardDevice } from "@/components/dashboard/userDeviceData";
 
 function SocBar({ value, color }: { value: number; color: string }) {
   return (
@@ -19,11 +19,11 @@ function SocBar({ value, color }: { value: number; color: string }) {
   );
 }
 
-export default function DeviceTable({
-  devices = allDevices,
-}: {
-  devices?: DashboardDevice[];
-}) {
+interface Props {
+  data: DashboardDevice[];
+}
+
+export default function DeviceTable({ data }: Props) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm" style={{ borderCollapse: "collapse" }}>
@@ -41,9 +41,9 @@ export default function DeviceTable({
           </tr>
         </thead>
         <tbody>
-          {devices.map((d) => (
+          {data.map((d, i) => (
             <tr
-              key={d.name}
+              key={i}
               className="transition-colors"
               style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}
             >

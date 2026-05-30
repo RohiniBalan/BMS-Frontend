@@ -27,12 +27,20 @@ export default function LoginPage() {
 
       const decoded: any = jwtDecode(token);
 
+      const user = {
+        fullName: decoded?.fullName || decoded?.name,
+        email: decoded?.email,
+        role: decoded?.role,
+      };
+
+      localStorage.setItem("user", JSON.stringify(user));
+
       const role = decoded?.role;
 
       if (role === "ADMIN") {
-        router.push("/dashboard");
+        router.push("/dashboard?showHealthPopup=1");
       } else {
-        router.push("/user-dashboard");
+        router.push("/user-dashboard?showHealthPopup=1");
       }
     }
   }, [searchParams, router]);
@@ -44,19 +52,23 @@ export default function LoginPage() {
       setLoading(true);
 
       const data = await login(email, password);
-      
+      console.log("LOGIN RESPONSE:", data);
 
-      const token = data?.data?.token;
+      const token = data?.data?.accessToken;
       const role = data?.data?.user?.role;
 
       if (token) {
         localStorage.setItem("accessToken", token);
       }
 
+      if (data?.data?.user) {
+        localStorage.setItem("user", JSON.stringify(data.data.user));
+      }
+
       if (role === "ADMIN") {
-        router.push("/dashboard");
+        router.push("/dashboard?showHealthPopup=1");
       } else {
-        router.push("/user-dashboard");
+        router.push("/user-dashboard?showHealthPopup=1");
       }
     } catch (error: any) {
       console.error(error);

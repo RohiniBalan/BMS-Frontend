@@ -1,28 +1,45 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Activity, AlertTriangle, BatteryCharging, Cpu, LayoutGrid } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  BatteryCharging,
+  Cpu,
+  LayoutGrid,
+} from "lucide-react";
 import StatCard from "@/components/dashboard/StatCard";
 import SocDonut from "@/components/dashboard/SocDonut";
 import SocTrendChart from "@/components/dashboard/SocTrendChart";
 import DeviceTable from "@/components/dashboard/DeviceTable";
 import RecentAlerts from "@/components/dashboard/RecentAlerts";
 import { getDevicesForUser } from "@/components/dashboard/userDeviceData";
+import { useDashboard } from "@/hooks/useDashboard";
 
 export default function UserDashboardPage() {
+  const { loading, summary, fleet, devices, alerts, socDist, socTrend } =
+    useDashboard();
+  const activeAlertCount = alerts.length;
   const [loginEmail, setLoginEmail] = useState("user@bms.io");
-  const userDevices = useMemo(() => getDevicesForUser(loginEmail), [loginEmail]);
-  const assignedDevices = userDevices.length;
-  const excellentDevices = userDevices.filter((device) => device.health === "Excellent").length;
-  const goodDevices = userDevices.filter((device) => device.health === "Good").length;
-  const onlineDevices = userDevices.filter((device) => device.status === "Online").length;
-  const averageSoc = Math.round(
-    userDevices.reduce((total, device) => total + device.soc, 0) / assignedDevices
+  const userDevices = useMemo(
+    () => getDevicesForUser(loginEmail),
+    [loginEmail],
   );
   const userLabel = loginEmail.split("@")[0] || "user";
+  const assignedDevices = devices.length;
+  const averageSoc = assignedDevices
+    ? Math.round(
+        userDevices.reduce((sum, d) => sum + (d.soc || 0), 0) / assignedDevices,
+      )
+    : 0;
+  const onlineDevices = devices.filter((d) => d.status === "ONLINE").length;
+  const excellentDevices = devices.filter((d) => d.soc >= 80).length;
+  const goodDevices = devices.filter((d) => d.soc >= 40 && d.soc < 80).length;
 
   useEffect(() => {
-    setLoginEmail(window.localStorage.getItem("bmsLoginEmail") || "user@bms.io");
+    setLoginEmail(
+      window.localStorage.getItem("bmsLoginEmail") || "user@bms.io",
+    );
   }, []);
 
   return (
@@ -47,7 +64,7 @@ export default function UserDashboardPage() {
         <StatCard
           title="My Average SOC"
           value={`${averageSoc}%`}
-          subtext="Up 4% from yesterday"
+          subtext={`↑ ${summary?.socChangeFromYesterday ?? 0}% from yesterday`}
           subtextColor="#00E676"
           icon={<BatteryCharging size={13} style={{ color: "#00E676" }} />}
           iconBg="rgba(0,230,118,0.12)"
@@ -59,8 +76,8 @@ export default function UserDashboardPage() {
 
         <StatCard
           title="Assigned Devices"
-          value={assignedDevices}
-          subtext={`${onlineDevices} Online`}
+          value={devices.length}
+          subtext={`${devices.filter((d) => d.status === "ONLINE").length} Online`}
           subtextColor="#00E676"
           icon={<Cpu size={13} style={{ color: "#FFB300" }} />}
           iconBg="rgba(255,179,0,0.12)"
@@ -68,8 +85,8 @@ export default function UserDashboardPage() {
 
         <StatCard
           title="Active Alerts"
-          value="2"
-          subtext="1 Warning, 1 Notice"
+          value={activeAlertCount}
+          subtext={`${summary?.criticalAlerts ?? 0} Critical · ${summary?.warningAlerts ?? 0} Warnings`}
           subtextColor="#FFB300"
           icon={<AlertTriangle size={13} style={{ color: "#FFB300" }} />}
           iconBg="rgba(255,179,0,0.12)"
@@ -88,25 +105,39 @@ export default function UserDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div
           className="lg:col-span-2 rounded-xl p-4"
-          style={{ background: "#0C1426", border: "1px solid rgba(255,255,255,0.06)" }}
+          style={{
+            background: "#0C1426",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-white">My Device Status</h2>
+            <h2 className="text-sm font-semibold text-white">
+              My Device Status
+            </h2>
             <button className="text-xs" style={{ color: "#00E676" }}>
               View devices
             </button>
           </div>
-          <DeviceTable devices={userDevices} />
+          <DeviceTable data={devices} />
         </div>
 
         <div
           className="rounded-xl p-4"
-          style={{ background: "#0C1426", border: "1px solid rgba(255,255,255,0.06)" }}
+          style={{
+            background: "#0C1426",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
         >
-          <h2 className="text-sm font-semibold text-white mb-4">Fleet Summary</h2>
+          <h2 className="text-sm font-semibold text-white mb-4">
+            Fleet Summary
+          </h2>
           <div className="flex flex-col gap-3">
             {[
-              { label: "Assigned Devices", value: assignedDevices, color: "white" },
+              {
+                label: "Assigned Devices",
+                value: assignedDevices,
+                color: "white",
+              },
               { label: "Excellent", value: excellentDevices, color: "#00E676" },
               { label: "Good", value: goodDevices, color: "#FFB300" },
             ].map((row) => (
@@ -115,8 +146,13 @@ export default function UserDashboardPage() {
                 className="flex items-center justify-between py-2"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
               >
-                <span className="text-sm" style={{ color: "#8899BB" }}>{row.label}</span>
-                <span className="text-sm font-bold" style={{ color: row.color }}>
+                <span className="text-sm" style={{ color: "#8899BB" }}>
+                  {row.label}
+                </span>
+                <span
+                  className="text-sm font-bold"
+                  style={{ color: row.color }}
+                >
                   {row.value}
                 </span>
               </div>
@@ -128,7 +164,23 @@ export default function UserDashboardPage() {
               style={{ background: "#00E676" }}
             />
             <span className="text-xs" style={{ color: "#8899BB" }}>
-              Fleet Health: <span style={{ color: "#00E676" }}>Good and Excellent</span>
+              Fleet Health:{" "}
+              <span
+                style={{
+                  color:
+                    averageSoc >= 80
+                      ? "#00E676"
+                      : averageSoc >= 40
+                        ? "#FFB300"
+                        : "#FF5252",
+                }}
+              >
+                {averageSoc >= 80
+                  ? "Excellent"
+                  : averageSoc >= 40
+                    ? "Good"
+                    : "Critical"}
+              </span>
             </span>
           </div>
         </div>
@@ -137,10 +189,15 @@ export default function UserDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div
           className="lg:col-span-2 rounded-xl p-4"
-          style={{ background: "#0C1426", border: "1px solid rgba(255,255,255,0.06)" }}
+          style={{
+            background: "#0C1426",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-white">SOC Trend (My Devices)</h2>
+            <h2 className="text-sm font-semibold text-white">
+              SOC Trend (My Devices)
+            </h2>
             <span
               className="text-xs px-2.5 py-1 rounded-lg"
               style={{ background: "rgba(0,230,118,0.08)", color: "#00E676" }}
@@ -148,12 +205,15 @@ export default function UserDashboardPage() {
               24 Hours
             </span>
           </div>
-          <SocTrendChart />
+          <SocTrendChart data={socTrend} />
         </div>
 
         <div
           className="rounded-xl p-4"
-          style={{ background: "#0C1426", border: "1px solid rgba(255,255,255,0.06)" }}
+          style={{
+            background: "#0C1426",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-white">My Alerts</h2>
@@ -161,7 +221,7 @@ export default function UserDashboardPage() {
               View All
             </button>
           </div>
-          <RecentAlerts />
+          <RecentAlerts data={alerts} />
         </div>
       </div>
     </div>
