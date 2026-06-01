@@ -12,6 +12,7 @@ export const useDashboard = () => {
   const [socDist, setSocDist] = useState<any>(null); 
   const [socTrend, setSocTrend] = useState<any[]>([]);
 
+  
   useEffect(() => {
     const load = async () => {
       try {
@@ -40,6 +41,7 @@ setDevices(
     const latest = device.telemetry?.[0];
 
     const soc = latest?.soc || 0;
+
 
     return {
       id: device.id,

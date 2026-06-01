@@ -38,8 +38,6 @@ export default function SocTrendChart({ data }: Props) {
           tick={{ fill: "#4A5A7A", fontSize: 10 }}
           axisLine={false}
           tickLine={false}
-          domain={[50, 100]}
-          ticks={[50, 75, 100]}
         />
         <Tooltip
           contentStyle={{

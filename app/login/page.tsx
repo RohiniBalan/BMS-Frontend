@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { login, googleLogin, microsoftLogin } from "@/services/authService";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function LoginPage() {
     }
   }, [searchParams, router]);
 
+  // HANDLE SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -52,7 +54,8 @@ export default function LoginPage() {
       setLoading(true);
 
       const data = await login(email, password);
-      console.log("LOGIN RESPONSE:", data);
+
+      toast.success("Logged in successfully 🎉")
 
       const token = data?.data?.accessToken;
       const role = data?.data?.user?.role;
@@ -71,18 +74,19 @@ export default function LoginPage() {
         router.push("/user-dashboard?showHealthPopup=1");
       }
     } catch (error: any) {
-      console.error(error);
-      alert(error.message || "Login failed");
-    } finally {
+  toast.error(error?.response?.data?.message || error.message || "Login failed");
+} finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
+    toast.loading("Redirecting to Google...");
     googleLogin();
   };
 
   const handleMicrosoftLogin = () => {
+    toast.loading("Redirecting to Microsoft...");
     microsoftLogin();
   };
 

@@ -10,10 +10,12 @@ import SocDistribution from "@/components/dashboard/SocDistribution";
 import RecentAlerts from "@/components/dashboard/RecentAlerts";
 
 import { useDashboard } from "@/hooks/useDashboard";
+import { useLiveStream } from "@/hooks/useLiveStream";
 
 export default function DashboardPage() {
   const { loading, summary, fleet, devices, alerts, socDist, socTrend } =
     useDashboard();
+  const { chartData, alerts: liveAlerts } = useLiveStream();
 
   if (loading) return <div className="text-white">Loading...</div>;
 
@@ -37,7 +39,7 @@ export default function DashboardPage() {
         <StatCard
           title="Total Capacity"
           value={`${summary?.totalCapacityMWh ?? 0} MWh`}
-  subtext={`↑ ${summary?.capacityChangeTodayKWh ?? 0} kWh today`}
+          subtext={`↑ ${summary?.capacityChangeTodayKWh ?? 0} kWh today`}
           subtextColor="#00E676"
           icon={<Zap size={13} style={{ color: "#448AFF" }} />}
           iconBg="rgba(68,138,255,0.12)"
@@ -46,7 +48,7 @@ export default function DashboardPage() {
         <StatCard
           title="Active Alerts"
           value={summary?.totalAlerts ?? 0}
-  subtext={`${summary?.criticalAlerts ?? 0} Critical · ${summary?.warningAlerts ?? 0} Warnings`}
+          subtext={`${summary?.criticalAlerts ?? 0} Critical · ${summary?.warningAlerts ?? 0} Warnings`}
           subtextColor="#FF5252"
           icon={<AlertTriangle size={13} style={{ color: "#FF5252" }} />}
           iconBg="rgba(255,82,82,0.12)"
@@ -174,7 +176,8 @@ export default function DashboardPage() {
             <span className="text-xs text-green-400">24 Hours</span>
           </div>
 
-          <SocTrendChart data={socTrend} />
+          {/* <SocTrendChart data={socTrend} /> */}
+          <SocTrendChart data={chartData} />
         </div>
 
         {/* RIGHT */}
@@ -195,7 +198,8 @@ export default function DashboardPage() {
               <button className="text-xs text-green-400">View All</button>
             </div>
 
-            <RecentAlerts data={alerts} />
+            {/* <RecentAlerts data={alerts} /> */}
+            <RecentAlerts data={[...liveAlerts, ...alerts]} />
           </div>
         </div>
       </div>

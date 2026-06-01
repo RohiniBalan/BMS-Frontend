@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button"
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetPassword } from "@/services/authService";
+import { toast } from "react-toastify";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -15,16 +16,17 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // HANDLE SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!token) {
-      alert("Invalid or expired link");
+      toast.error("Invalid or expired link");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -33,11 +35,11 @@ export default function ResetPasswordPage() {
 
       await resetPassword(token, password, confirmPassword);
 
-      alert("Password reset successful");
+      toast.success("Password reset successful 🎉");
 
       router.push("/login");
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err?.response?.data?.message || err.message || "Password reset failed");
     } finally {
       setLoading(false);
     }

@@ -6,19 +6,36 @@ import Input from "@/components/ui/Input";
 import { useState } from "react";
 import Link from "next/link";
 import { forgotPassword } from "@/services/authService";
+import { toast } from "react-toastify";
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
+
+  // HANDLE SUBMIT
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setLoading(true);
+
+    if (!email) {
+      toast.error("Email is required");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const res = await forgotPassword(email);
-      alert(res.message || "Check your email");
+
+      toast.success(res?.message || "Check your email for reset link 📩");
+
+      setEmail("");
     } catch (error: any) {
-      alert(error.message);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to send reset link",
+      );
     } finally {
       setLoading(false);
     }

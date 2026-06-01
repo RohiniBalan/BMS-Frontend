@@ -6,6 +6,7 @@ import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { signup, googleLogin } from "@/services/authService";
 import {useRouter} from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -42,6 +43,8 @@ export default function SignupPage() {
   //     window.location.href = "/dashboard";
   //   }, 1200);
   // };
+
+  // HANDLE SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
@@ -50,7 +53,7 @@ export default function SignupPage() {
     setError("");
 
     if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -62,6 +65,7 @@ export default function SignupPage() {
       phoneNumber: form.phoneNumber,
     });
 
+    toast.success("Account created successfully 🎉")
     const role = res?.user?.role;
 
     if (role === "ADMIN") {
@@ -71,7 +75,8 @@ export default function SignupPage() {
     }
 
   } catch (err: any) {
-    setError(err.message || "Signup failed");
+     const message = err?.response?.data?.message || err?.message || "Signup failed";
+     toast.error(message);
   } finally {
     setLoading(false);
   }
@@ -80,6 +85,7 @@ export default function SignupPage() {
 
 // Handle Google
   const handleGoogleLogin = () => {
+    toast.loading("Redirecting to Google...");
     googleLogin();
   };
 

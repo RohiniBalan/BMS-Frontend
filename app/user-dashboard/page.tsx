@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -15,10 +15,13 @@ import DeviceTable from "@/components/dashboard/DeviceTable";
 import RecentAlerts from "@/components/dashboard/RecentAlerts";
 import { getDevicesForUser } from "@/components/dashboard/userDeviceData";
 import { useDashboard } from "@/hooks/useDashboard";
+import { useLiveStream } from "@/hooks/useLiveStream";
 
 export default function UserDashboardPage() {
   const { loading, summary, fleet, devices, alerts, socDist, socTrend } =
     useDashboard();
+  const { chartData, alerts: liveAlerts } = useLiveStream();
+
   const activeAlertCount = alerts.length;
   const [loginEmail, setLoginEmail] = useState("user@bms.io");
   const userDevices = useMemo(
@@ -205,7 +208,8 @@ export default function UserDashboardPage() {
               24 Hours
             </span>
           </div>
-          <SocTrendChart data={socTrend} />
+          {/* <SocTrendChart data={socTrend} /> */}
+          <SocTrendChart data={chartData} />
         </div>
 
         <div
@@ -221,7 +225,8 @@ export default function UserDashboardPage() {
               View All
             </button>
           </div>
-          <RecentAlerts data={alerts} />
+          {/* <RecentAlerts data={alerts} /> */}
+          <RecentAlerts data={[...liveAlerts, ...alerts]} />
         </div>
       </div>
     </div>

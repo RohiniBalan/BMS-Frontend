@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API;
+export const API_BASE = process.env.NEXT_PUBLIC_API;
 
 export const apiFetch = async (url: string, options: RequestInit = {}) => {
   const token = localStorage.getItem("accessToken");
