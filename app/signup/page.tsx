@@ -6,7 +6,7 @@ import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { signup, googleLogin } from "@/services/authService";
 import {useRouter} from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 
 export default function SignupPage() {
   const router = useRouter();
