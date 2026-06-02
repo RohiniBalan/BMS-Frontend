@@ -2,21 +2,21 @@
 
 import AuthLeftPanel from "@/components/auth/AuthLeftPanel";
 import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button"
-import { useState } from "react";
+import Button from "@/components/ui/Button";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetPassword } from "@/services/authService";
 import { toast } from "react-toastify";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // HANDLE SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -39,25 +39,24 @@ export default function ResetPasswordPage() {
 
       router.push("/login");
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || err.message || "Password reset failed");
+      toast.error(
+        err?.response?.data?.message ||
+        err.message ||
+        "Password reset failed"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    /* Full screen, two equal halves */
     <div className="flex h-screen w-screen overflow-hidden">
-      {/* ── LEFT HALF ─────────────────────────────── */}
       <AuthLeftPanel />
 
-      {/* ── RIGHT HALF ─────────────────────────────── */}
       <div
-        className="flex-1 flex flex-col items-center justify-center relative
-        overflow-auto"
+        className="flex-1 flex flex-col items-center justify-center relative overflow-auto"
         style={{ background: "#050B18" }}
       >
-        {/* Subtle grid */}
         <div
           className="absolute inset-0"
           style={{
@@ -66,7 +65,7 @@ export default function ResetPasswordPage() {
             backgroundSize: "48px 48px",
           }}
         />
-        {/* Glow */}
+
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -75,36 +74,17 @@ export default function ResetPasswordPage() {
           }}
         />
 
-        {/* Form box — fixed width, vertically centered */}
         <div
           className="relative z-10 w-full"
           style={{ maxWidth: 420, padding: "0 40px" }}
         >
-          {/* Mobile-only logo */}
-          <div className="flex lg:hidden justify-center mb-8">
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                background: "linear-gradient(135deg, #00E676, #00BFA5)",
-                borderRadius: 12,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg width={22} height={26} viewBox="0 0 20 26" fill="none">
-                <path d="M12 2L2 15H10L8 24L18 11H10L12 2Z" fill="#050B18" />
-              </svg>
-            </div>
-          </div>
-
           <h2
             className="font-bold text-white"
             style={{ fontSize: 24, marginBottom: 4 }}
           >
             Reset Password
           </h2>
+
           <p style={{ fontSize: 14, color: "#8899BB", marginBottom: 28 }}>
             Create a strong new password below...
           </p>
@@ -128,6 +108,7 @@ export default function ResetPasswordPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
+
             <Button type="submit" fullWidth size="lg" loading={loading}>
               Reset Password
             </Button>
@@ -135,5 +116,13 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
