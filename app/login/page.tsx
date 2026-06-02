@@ -5,12 +5,12 @@ import AuthLeftPanel from "@/components/auth/AuthLeftPanel";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { login, googleLogin, microsoftLogin } from "@/services/authService";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -391,5 +391,13 @@ function MicrosoftIcon() {
       <path d="M11.4 12.6H2V22h9.4v-9.4z" fill="#00A4EF" />
       <path d="M22 12.6h-9.4V22H22v-9.4z" fill="#FFB900" />
     </svg>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
