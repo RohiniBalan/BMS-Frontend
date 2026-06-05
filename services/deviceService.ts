@@ -7,3 +7,11 @@ export const getDeviceMap = () => apiFetch("/devices/map");
 
 export const getDeviceById = (id: string) =>
   apiFetch(`/devices/${id}`);
+
+// Register new device
+export const registerDevice = (payload: any) => {
+  return apiFetch("/devices/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+};

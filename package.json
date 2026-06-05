@@ -18,7 +18,8 @@
     "react-dom": "^18",
     "react-toastify": "^11.1.0",
     "recharts": "^3.8.1",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@types/node": "^20",

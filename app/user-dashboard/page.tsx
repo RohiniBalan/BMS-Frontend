@@ -16,8 +16,14 @@ import RecentAlerts from "@/components/dashboard/RecentAlerts";
 import { getDevicesForUser } from "@/components/dashboard/userDeviceData";
 import { useDashboard } from "@/hooks/useDashboard";
 import { useLiveStream } from "@/hooks/useLiveStream";
+import AddDeviceModal from "@/components/dashboard/AddDeviceModal";
+import { useAddDeviceModal } from "@/hooks/useAddDeviceModal";
+import { registerDevice } from "@/services/deviceService";
+import { toast } from "react-toastify";
 
 export default function UserDashboardPage() {
+  const [showAddDevice, setShowAddDevice] = useState(false);
+const [prefillData, setPrefillData] = useState<any>(null);
   const { loading, summary, fleet, devices, alerts, socDist, socTrend } =
     useDashboard();
   const { chartData, alerts: liveAlerts } = useLiveStream();
@@ -39,14 +45,27 @@ export default function UserDashboardPage() {
   const excellentDevices = devices.filter((d) => d.soc >= 80).length;
   const goodDevices = devices.filter((d) => d.soc >= 40 && d.soc < 80).length;
 
+  const { open, closeModal } = useAddDeviceModal();
   useEffect(() => {
     setLoginEmail(
       window.localStorage.getItem("bmsLoginEmail") || "user@bms.io",
     );
   }, []);
 
+  // Hanlde adding new device
+  const handleAddDevice = async (data: any) => {
+  try {
+    await registerDevice(data);
+    toast.success("Device Added Successfully 🎉");
+    setShowAddDevice(false);
+    // refresh dashboard
+  } catch (err) {
+    toast.error("Failed to add device");
+  }
+};
+
   return (
-    <div className="flex flex-col gap-5 animate-fade-in">
+    <div className="flex flex-col gap-5">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-white">My Battery Dashboard</h1>
@@ -54,6 +73,13 @@ export default function UserDashboardPage() {
             Real-time overview of {userLabel}&apos;s assigned battery systems
           </p>
         </div>
+        <div className='flex items-center gap-2'>
+        <button
+          onClick={() => setShowAddDevice(true)}
+          className="btn-primary text-xs px-4 py-2 flex items-center gap-2"
+        >
+          + Add Device
+        </button>
         <button
           className="btn-secondary text-xs px-4 py-2 flex items-center gap-2"
           style={{ borderRadius: 8 }}
@@ -61,6 +87,7 @@ export default function UserDashboardPage() {
           <LayoutGrid size={13} />
           My Devices
         </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -229,6 +256,11 @@ export default function UserDashboardPage() {
           <RecentAlerts data={[...liveAlerts, ...alerts]} />
         </div>
       </div>
+      <AddDeviceModal
+          open={showAddDevice}
+          onClose={() => setShowAddDevice(false)}
+          onSubmit={handleAddDevice}
+        />
     </div>
   );
 }
