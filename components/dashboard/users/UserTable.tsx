@@ -21,8 +21,9 @@ export default function UserTable({ users, onView }: UserTableProps) {
 
             <th className="text-left py-3 text-[#4A5A7A] font-medium">Email</th>
 
-                        <th className="text-left py-3 text-[#4A5A7A] font-medium">Phone Number</th>
-
+            <th className="text-left py-3 text-[#4A5A7A] font-medium">
+              Phone Number
+            </th>
 
             <th className="text-left py-3 text-[#4A5A7A] font-medium">
               Devices
@@ -104,7 +105,6 @@ export default function UserTable({ users, onView }: UserTableProps) {
                       })
                     : "Never"}
                 </td>
-
               </tr>
             ))
           )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { registerDevice } from "@/services/deviceService";
@@ -9,6 +10,7 @@ export default function AddDeviceModal({
   open,
   onClose,
   prefill,
+  onSubmit,
 }: any) {
   const [form, setForm] = useState({
     deviceId: "",
@@ -17,6 +19,8 @@ export default function AddDeviceModal({
     batteryType: "",
   });
 
+  const isEditMode = !!prefill;
+
   useEffect(() => {
     if (prefill) setForm(prefill);
   }, [prefill]);
@@ -24,29 +28,38 @@ export default function AddDeviceModal({
   if (!open) return null;
 
   const handleSubmit = async () => {
-    await registerDevice(form);
-    onClose();
+    try {
+      if (onSubmit) {
+        await onSubmit(form);
+      } else {
+        await registerDevice(form);
+        toast.success("Device registered successfully 🎉");
+      }
+
+      onClose();
+    } catch (err) {
+      toast.error("Something went wrong");
+    }
   };
 
   const isFormValid =
-  form.deviceId.trim() !== "" &&
-  form.deviceName.trim() !== "" &&
-  form.dataSubscription.trim() !== "" &&
-  form.batteryType.trim() !== "";
+    form.deviceId.trim() !== "" &&
+    form.deviceName.trim() !== "" &&
+    form.dataSubscription.trim() !== "" &&
+    form.batteryType.trim() !== "";
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center z-50">
       <div className="bg-[#0B1220] p-6 rounded-xl w-full max-w-md border border-[#00E676]/20 shadow-2xl">
-
-        <h2 className="text-[#00E676] text-lg font-bold mb-4 text-center">Add Device</h2>
+        <h2 className="text-[#00E676] text-lg font-bold mb-4 text-center">
+          {isEditMode ? "Update Device" : "Add Device"}
+        </h2>
 
         <Input
           label="Device ID"
           value={form.deviceId}
           className="mb-3"
-          onChange={(e) =>
-            setForm({ ...form, deviceId: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, deviceId: e.target.value })}
           disabled={!!prefill}
         />
 
@@ -54,9 +67,7 @@ export default function AddDeviceModal({
           label="Device Name"
           value={form.deviceName}
           className="mb-3"
-          onChange={(e) =>
-            setForm({ ...form, deviceName: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, deviceName: e.target.value })}
         />
 
         <Input
@@ -85,9 +96,7 @@ export default function AddDeviceModal({
         <select
           className="input-field mb-3 w-full"
           value={form.batteryType}
-          onChange={(e) =>
-            setForm({ ...form, batteryType: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, batteryType: e.target.value })}
         >
           <option value="">Select battery type</option>
           <option value="LITHIUM_IRON">Lithium Iron</option>
@@ -101,8 +110,12 @@ export default function AddDeviceModal({
             Cancel
           </Button>
 
-          <Button variant="primary" onClick={handleSubmit} disabled={!isFormValid}>
-            Add Device
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={!isFormValid}
+          >
+            {isEditMode ? "Update Device" : "Add Device"}
           </Button>
         </div>
       </div>

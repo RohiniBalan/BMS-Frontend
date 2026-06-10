@@ -4,7 +4,7 @@ import { Users, UserCheck, Shield } from "lucide-react";
 import { useState } from "react";
 import { User } from "@/types/user";
 import StatCard from "@/components/dashboard/StatCard";
-import UserTable from "@/components/users/UserTable";
+import UserTable from "@/components/dashboard/users/UserTable";
 import { useUsers } from "@/hooks/useUsers";
 
 export default function UsersPage() {
