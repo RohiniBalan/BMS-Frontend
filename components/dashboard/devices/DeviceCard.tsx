@@ -70,12 +70,12 @@ export default function DeviceCard({ device, onClick }: any) {
           label="Temp"
           value={`${telemetry?.temperature ?? "--"} °C`}
         />
-
+{/* 
         <Metric
           icon={<Cpu size={14} />}
           label="Assigned To"
           value={device.user?.fullName || "Unassigned"}
-        />
+        /> */}
       </div>
 
       {/* Battery Bar */}

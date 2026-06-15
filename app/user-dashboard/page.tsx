@@ -23,7 +23,7 @@ import { toast } from "react-toastify";
 
 export default function UserDashboardPage() {
   const [showAddDevice, setShowAddDevice] = useState(false);
-const [prefillData, setPrefillData] = useState<any>(null);
+  const [prefillData, setPrefillData] = useState<any>(null);
   const { loading, summary, fleet, devices, alerts, socDist, socTrend } =
     useDashboard();
   const { chartData, alerts: liveAlerts } = useLiveStream();
@@ -54,15 +54,15 @@ const [prefillData, setPrefillData] = useState<any>(null);
 
   // Hanlde adding new device
   const handleAddDevice = async (data: any) => {
-  try {
-    await registerDevice(data);
-    toast.success("Device Added Successfully 🎉");
-    setShowAddDevice(false);
-    // refresh dashboard
-  } catch (err) {
-    toast.error("Failed to add device");
-  }
-};
+    try {
+      await registerDevice(data);
+      toast.success("Device Added Successfully 🎉");
+      setShowAddDevice(false);
+      // refresh dashboard
+    } catch (err) {
+      toast.error("Failed to add device");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -73,20 +73,20 @@ const [prefillData, setPrefillData] = useState<any>(null);
             Real-time overview of {userLabel}&apos;s assigned battery systems
           </p>
         </div>
-        <div className='flex items-center gap-2'>
-        <button
-          onClick={() => setShowAddDevice(true)}
-          className="btn-primary text-xs px-4 py-2 flex items-center gap-2"
-        >
-          + Add Device
-        </button>
-        <button
-          className="btn-secondary text-xs px-4 py-2 flex items-center gap-2"
-          style={{ borderRadius: 8 }}
-        >
-          <LayoutGrid size={13} />
-          My Devices
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowAddDevice(true)}
+            className="btn-primary text-xs px-4 py-2 flex items-center gap-2"
+          >
+            + Add Device
+          </button>
+          <button
+            className="btn-secondary text-xs px-4 py-2 flex items-center gap-2"
+            style={{ borderRadius: 8 }}
+          >
+            <LayoutGrid size={13} />
+            My Devices
+          </button>
         </div>
       </div>
 
@@ -257,10 +257,10 @@ const [prefillData, setPrefillData] = useState<any>(null);
         </div>
       </div>
       <AddDeviceModal
-          open={showAddDevice}
-          onClose={() => setShowAddDevice(false)}
-          onSubmit={handleAddDevice}
-        />
+        open={showAddDevice}
+        onClose={() => setShowAddDevice(false)}
+        onSubmit={handleAddDevice}
+      />
     </div>
   );
 }

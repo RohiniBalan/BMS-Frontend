@@ -1,28 +1,29 @@
 "use client";
 
-import { Users, UserCheck, Shield } from "lucide-react";
-import { useState } from "react";
+import { Users, UserCheck, Shield, CircleUserRound  } from "lucide-react";
+import { useState, useEffect } from "react";
 import { User } from "@/types/user";
+import Button from "@/components/ui/Button";
 import StatCard from "@/components/dashboard/StatCard";
 import UserTable from "@/components/dashboard/users/UserTable";
-import { useUsers } from "@/hooks/useUsers";
+import { getUsers } from "@/services/userService";
 
 export default function UsersPage() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const { loading, users } =  useUsers();
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  const totalUsers = users.length;
+  const limit = 30;
 
-const activeUsers = users.filter(
-  (u) => u.status === "Active"
-).length;
+  const activeUsers = users.filter((u) => u.status === "Active").length;
 
-const adminUsers = users.filter(
-  (u) => u.role === "ADMIN"
-).length;
+  const adminUsers = users.filter((u) => u.role === "ADMIN").length;
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -37,9 +38,31 @@ const adminUsers = users.filter(
     return matchesSearch && matchesRole && matchesStatus;
   });
 
+  const loadUsers = async (pageNumber = 1) => {
+    try {
+      setLoading(true);
+
+      const res = await getUsers(pageNumber, 30);
+
+      console.log("Users API Response:", res);
+
+      setUsers(res.data || []);
+      setTotalUsers(res.data?.length || 0);
+      setTotalPages(1);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsers(page);
+  }, [page]);
+
   if (loading) {
-  return <div className="text-white">Loading...</div>;
-}
+    return <div className="text-white">Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -145,12 +168,46 @@ const adminUsers = users.filter(
         </div>
 
         {/* Table */}
-        <UserTable
-          users={filteredUsers}
-          onView={(user) => {
-            setSelectedUser(user);
+        {filteredUsers.length > 0 ? (
+          <UserTable
+            users={filteredUsers}
+            onView={(user) => {
+              setSelectedUser(user);
+            }}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16">
+          <CircleUserRound  size={64} className="text-[#2D3A57]" />
+
+          <h3 className="text-white text-lg mt-4">No Users Found</h3>
+        </div>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between mt-4 text-white">
+        <Button
+          onClick={() => {
+            if (page > 1) setPage(page - 1);
           }}
-        />
+          disabled={page === 1}
+          className="px-4 py-2 bg-[#0C1426] border border-white/10 rounded disabled:opacity-40"
+        >
+          Prev
+        </Button>
+
+        <div className="text-sm text-[#8899BB]">
+          Page {page} of {totalPages}
+        </div>
+
+        <Button
+          onClick={() => {
+            if (page < totalPages) setPage(page + 1);
+          }}
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-[#0C1426] border border-white/10 rounded disabled:opacity-40"
+        >
+          Next
+        </Button>
       </div>
     </div>
   );

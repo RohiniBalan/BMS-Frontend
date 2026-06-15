@@ -33,16 +33,6 @@ export default function SignupPage() {
 
   const set = (key: string, value: string | boolean) =>
     setForm((f) => ({ ...f, [key]: value }));
-  
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //     window.location.href = "/dashboard";
-  //   }, 1200);
-  // };
 
   // HANDLE SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,7 +71,6 @@ export default function SignupPage() {
     setLoading(false);
   }
 };
-
 
 // Handle Google
   const handleGoogleLogin = () => {

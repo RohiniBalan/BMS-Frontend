@@ -305,28 +305,6 @@ function LoginContent() {
   );
 }
 
-// function SsoButton({ icon, label }: { icon: React.ReactNode; label: string }) {
-//   return (
-//     <button
-//       className="btn-secondary"
-//       style={{
-//         flex: 1,
-//         display: "flex",
-//         alignItems: "center",
-//         justifyContent: "center",
-//         gap: 8,
-//         padding: "10px 0",
-//         fontSize: 13,
-//         fontWeight: 600,
-//         borderRadius: 8,
-//       }}
-//     >
-//       {icon}
-//       {label}
-//     </button>
-//   );
-// }
-
 function SsoButton({
   icon,
   label,
