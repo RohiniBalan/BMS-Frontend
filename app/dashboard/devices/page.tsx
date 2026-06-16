@@ -80,7 +80,7 @@ export default function DevicesPage() {
 
       setDevices(res.devices || res.data || []);
       setTotalPages(res.pagination?.totalPages || 1);
-      setTotalDevices(res.pagnation?.total || 0);
+      setTotalDevices(res.pagination?.total || 0);
       setPage(pageNumber);
     } catch (err) {
       console.error(err);
