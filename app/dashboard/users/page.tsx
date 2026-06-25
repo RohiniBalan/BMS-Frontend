@@ -7,8 +7,10 @@ import Button from "@/components/ui/Button";
 import StatCard from "@/components/dashboard/StatCard";
 import UserTable from "@/components/dashboard/users/UserTable";
 import { getUsers } from "@/services/userService";
+import { useDropdownOptions } from "@/hooks/useDropdownOptions";
 
 export default function UsersPage() {
+  const { options, loading: optionsLoading } = useDropdownOptions();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -138,7 +140,8 @@ export default function UsersPage() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="h-10 rounded-lg px-3 text-sm"
+            disabled={optionsLoading}
+            className="h-10 rounded-lg px-3 text-sm disabled:opacity-50"
             style={{
               background: "#09111F",
               border: "1px solid rgba(255,255,255,0.06)",
@@ -146,15 +149,17 @@ export default function UsersPage() {
             }}
           >
             <option value="All">All Roles</option>
-            <option value="ADMIN">Admin</option>
-            <option value="USER">User</option>
+            {options.userRoles.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
           </select>
 
           {/* Status Filter */}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-10 rounded-lg px-3 text-sm"
+            disabled={optionsLoading}
+            className="h-10 rounded-lg px-3 text-sm disabled:opacity-50"
             style={{
               background: "#09111F",
               border: "1px solid rgba(255,255,255,0.06)",
@@ -162,8 +167,9 @@ export default function UsersPage() {
             }}
           >
             <option value="All">All Status</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            {options.userStatuses.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
           </select>
         </div>
 

@@ -36,6 +36,7 @@ import {
   getUserAlertReport,
   downloadUserCSV,
 } from "@/services/reportService";
+import { useDropdownOptions } from "@/hooks/useDropdownOptions";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -562,6 +563,7 @@ function MonthlyReport({ telemetryData }: { telemetryData: any }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function UserReportsPage() {
+  const { options, loading: optionsLoading } = useDropdownOptions();
   const [devices, setDevices] = useState<any[]>([]);
   const [deviceId, setDeviceId] = useState<string>("");
   const [activeTab, setActiveTab] = useState<ReportType>("performance");
@@ -770,15 +772,17 @@ export default function UserReportsPage() {
               <select
                 value={severity}
                 onChange={(e) => setSeverity(e.target.value)}
+                disabled={optionsLoading}
                 style={{
                   appearance: "none", background: "#111B2E", border: `1px solid ${C.border}`,
-                  borderRadius: 8, padding: "8px 32px 8px 12px", color: C.text, fontSize: 13, cursor: "pointer",
+                  borderRadius: 8, padding: "8px 32px 8px 12px", color: C.text, fontSize: 13,
+                  cursor: optionsLoading ? "not-allowed" : "pointer", opacity: optionsLoading ? 0.5 : 1,
                 }}
               >
                 <option value="">All Severities</option>
-                <option value="CRITICAL">Critical</option>
-                <option value="WARNING">Warning</option>
-                <option value="INFO">Info</option>
+                {options.alertSeverities.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
               </select>
               <ChevronDown size={14} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color: C.sub, pointerEvents: "none" }} />
             </div>

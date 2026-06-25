@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { registerDevice } from "@/services/deviceService";
+import { useDropdownOptions } from "@/hooks/useDropdownOptions";
 
 export default function AddDeviceModal({
   open,
@@ -12,6 +13,7 @@ export default function AddDeviceModal({
   prefill,
   onSubmit,
 }: any) {
+  const { options, loading: optionsLoading } = useDropdownOptions();
   const [form, setForm] = useState({
     deviceId: "",
     deviceName: "",
@@ -97,12 +99,16 @@ export default function AddDeviceModal({
           className="input-field mb-3 w-full"
           value={form.batteryType}
           onChange={(e) => setForm({ ...form, batteryType: e.target.value })}
+          disabled={optionsLoading}
         >
-          <option value="">Select battery type</option>
-          <option value="LITHIUM_IRON">Lithium Iron</option>
-          <option value="LITHIUM_IRON_PHOSPHATE">Lithium Iron Phosphate</option>
-          <option value="NICKEL_METAL_HYDRIDE">Nickle Metal Hydride</option>
-          <option value="LEAD_ACID_BATTERIES">Lead Acid</option>
+          <option value="">
+            {optionsLoading ? "Loading..." : "Select battery type"}
+          </option>
+          {options.batteryTypes.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
 
         <div className="flex justify-end gap-2 mt-5">

@@ -10,9 +10,11 @@ import Input from "@/components/ui/Input";
 import AssignDeviceModal from "@/components/dashboard/devices/AssignDeviceModal";
 import DeviceTable from "@/components/dashboard/devices/DeviceTable";
 import Button from "@/components/ui/Button";
+import { useDropdownOptions } from "@/hooks/useDropdownOptions";
 
 export default function DevicesPage() {
   const router = useRouter();
+  const { options, loading: optionsLoading } = useDropdownOptions();
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddDevice, setShowAddDevice] = useState(false);
@@ -157,33 +159,44 @@ export default function DevicesPage() {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="bg-[#0C1426] border border-white/10 rounded-xl px-4 py-3 text-white"
+          disabled={optionsLoading}
         >
           <option value="">All Status</option>
-          <option value="ONLINE">ONLINE</option>
-          <option value="OFFLINE">OFFLINE</option>
-          <option value="WARNING">WARNING</option>
+          {options.deviceStatuses
+            .filter((s) => ["ONLINE", "OFFLINE", "WARNING"].includes(s.value))
+            .map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.value}
+              </option>
+            ))}
         </select>
 
         <select
           value={batteryTypeFilter}
           onChange={(e) => setBatteryTypeFilter(e.target.value)}
           className="bg-[#0C1426] border border-white/10 rounded-xl px-4 py-3 text-white"
+          disabled={optionsLoading}
         >
           <option value="">All Battery Types</option>
-          <option value="LITHIUM_IRON">Lithium Iron</option>
-          <option value="LITHIUM_IRON_PHOSPHATE">Lithium Iron Phosphate</option>
-          <option value="NICKEL_METAL_HYDRIDE">Nickel Metal Hydride</option>
-          <option value="LEAD_ACID_BATTERIES">Lead Acid Batteries</option>
+          {options.batteryTypes.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
 
         <select
           value={assignmentFilter}
           onChange={(e) => setAssignmentFilter(e.target.value)}
           className="bg-[#0C1426] border border-white/10 rounded-xl px-4 py-3 text-white"
+          disabled={optionsLoading}
         >
           <option value="">All Devices</option>
-          <option value="ASSIGNED">Assigned</option>
-          <option value="UNASSIGNED">Unassigned</option>
+          {options.assignmentStatuses.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
       </div>
 

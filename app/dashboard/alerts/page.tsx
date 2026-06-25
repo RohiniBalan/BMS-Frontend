@@ -42,6 +42,7 @@ import {
   resolveAlert,
 } from "@/services/alertService";
 import Button from "@/components/ui/Button";
+import { useDropdownOptions } from "@/hooks/useDropdownOptions";
 
 type AlertStatus = "ACTIVE" | "ACKNOWLEDGED" | "RESOLVED";
 type ChartRange = "daily" | "weekly" | "monthly";
@@ -56,6 +57,7 @@ const severityColors: Record<string, string> = {
 const limit = 30;
 
 export default function AlertsPage() {
+  const { options, loading: optionsLoading } = useDropdownOptions();
   const [alerts, setAlerts] = useState<any[]>([]);
   const [recentAlerts, setRecentAlerts] = useState<any[]>([]);
   const [devices, setDevices] = useState<any[]>([]);
@@ -299,18 +301,18 @@ export default function AlertsPage() {
             />
           </div>
 
-          <Select value={severityFilter} onChange={setSeverityFilter}>
+          <Select value={severityFilter} onChange={setSeverityFilter} disabled={optionsLoading}>
             <option value="All">All Severities</option>
-            <option value="CRITICAL">Critical</option>
-            <option value="WARNING">Warning</option>
-            <option value="INFO">Info</option>
+            {options.alertSeverities.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
           </Select>
 
-          <Select value={statusFilter} onChange={setStatusFilter}>
+          <Select value={statusFilter} onChange={setStatusFilter} disabled={optionsLoading}>
             <option value="All">All Status</option>
-            <option value="ACTIVE">Active</option>
-            <option value="ACKNOWLEDGED">Acknowledged</option>
-            <option value="RESOLVED">Resolved</option>
+            {options.alertStatuses.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
           </Select>
 
           {/* <Select value={deviceFilter} onChange={setDeviceFilter}>
@@ -587,17 +589,20 @@ export default function AlertsPage() {
 function Select({
   value,
   onChange,
+  disabled,
   children,
 }: {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
   children: ReactNode;
 }) {
   return (
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-10 rounded-lg bg-[#09111F] border border-white/10 px-3 text-sm text-white outline-none"
+      disabled={disabled}
+      className="h-10 rounded-lg bg-[#09111F] border border-white/10 px-3 text-sm text-white outline-none disabled:opacity-50"
     >
       {children}
     </select>

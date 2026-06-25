@@ -22,6 +22,7 @@ import {
   downloadCSV,
 } from "@/services/reportService";
 import { getDevices } from "@/services/deviceService";
+import { useDropdownOptions } from "@/hooks/useDropdownOptions";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -448,6 +449,7 @@ function AuditReport({ data }: { data: any[] }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ReportsPage() {
+  const { options, loading: optionsLoading } = useDropdownOptions();
   const [reportType, setReportType] = useState<ReportType>("fleet");
   const [from, setFrom] = useState(defaultFrom());
   const [to, setTo] = useState(defaultTo());
@@ -637,13 +639,16 @@ export default function ReportsPage() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="rounded-lg px-3 py-1.5 text-xs text-white outline-none appearance-none"
+              disabled={optionsLoading}
+              className="rounded-lg px-3 py-1.5 text-xs text-white outline-none appearance-none disabled:opacity-50"
               style={{ background: "#0A1020", border: `1px solid ${C.border}` }}
             >
               <option value="">All</option>
-              <option value="ONLINE">Online</option>
-              <option value="OFFLINE">Offline</option>
-              <option value="WARNING">Warning</option>
+              {options.deviceStatuses
+                .filter((s) => ["ONLINE", "OFFLINE", "WARNING"].includes(s.value))
+                .map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
             </select>
           </div>
         )}
@@ -655,13 +660,14 @@ export default function ReportsPage() {
             <select
               value={severity}
               onChange={(e) => setSeverity(e.target.value)}
-              className="rounded-lg px-3 py-1.5 text-xs text-white outline-none appearance-none"
+              disabled={optionsLoading}
+              className="rounded-lg px-3 py-1.5 text-xs text-white outline-none appearance-none disabled:opacity-50"
               style={{ background: "#0A1020", border: `1px solid ${C.border}` }}
             >
               <option value="">All</option>
-              <option value="CRITICAL">Critical</option>
-              <option value="WARNING">Warning</option>
-              <option value="INFO">Info</option>
+              {options.alertSeverities.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
             </select>
           </div>
         )}
